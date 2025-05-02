@@ -2,6 +2,7 @@ package com.example.userservice.controller;
 
 import com.example.userservice.dto.LoginRequest;
 import com.example.userservice.dto.RegisterRequest;
+import com.example.userservice.dto.UserRequest;
 import com.example.userservice.dto.UserResponse;
 import com.example.userservice.service.AuthService;
 import com.example.userservice.service.UserService;
@@ -29,13 +30,13 @@ public class UserController {
         return authService.login(request);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getProfile(@PathVariable UUID id) {
-        return userService.getProfile(id);
+    @GetMapping("/me")
+    public ResponseEntity<?> getProfile() {
+        return userService.getProfile(userService.getCurrentUserId());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProfile(@PathVariable UUID id, @RequestBody UserResponse request) {
-        return userService.updateProfile(id, request);
+    @PutMapping("/me")
+    public ResponseEntity<?> updateProfile(@RequestBody UserRequest request) {
+        return userService.updateProfile(userService.getCurrentUserId(), request);
     }
 }

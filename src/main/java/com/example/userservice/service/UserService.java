@@ -1,6 +1,7 @@
 package com.example.userservice.service;
 
 import com.example.userservice.dto.ApiResponse;
+import com.example.userservice.dto.UserRequest;
 import com.example.userservice.dto.UserResponse;
 import com.example.userservice.model.User;
 import com.example.userservice.repository.UserRepository;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,8 +20,9 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public ResponseEntity<?> getProfile(UUID userId) {
+    public ResponseEntity<?> getProfile(Long userId) {
         Optional<User> userOpt = userRepository.findById(userId);
 
         if (userOpt.isEmpty()) {
@@ -39,7 +42,7 @@ public class UserService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<?> updateProfile(UUID userId, UserResponse updatedInfo) {
+    public ResponseEntity<?> updateProfile(Long userId, UserRequest updatedInfo) {
         Optional<User> userOpt = userRepository.findById(userId);
 
         if (userOpt.isEmpty()) {
@@ -48,7 +51,18 @@ public class UserService {
                     .body(new ApiResponse("User not found"));
         }
         User user = userOpt.get();
-        user.setName(updatedInfo.getName());
+        if (updatedInfo.getName() != null  && !updatedInfo.getName().isBlank()) {
+            user.setName(updatedInfo.getName());
+        }
+        if (updatedInfo.getEmail() != null && !updatedInfo.getEmail().isBlank()) {
+            user.setEmail(updatedInfo.getEmail());
+        }
+        if (updatedInfo.getRole() != null && !updatedInfo.getRole().isBlank()) {
+            user.setRole(updatedInfo.getRole());
+        }
+        if (updatedInfo.getPassword() != null && !updatedInfo.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(updatedInfo.getPassword()));
+        }
         userRepository.save(user);
 
 
@@ -62,7 +76,7 @@ public class UserService {
         return ResponseEntity.ok(response);
     }
 
-    public UUID getCurrentUserId() {
-        return (UUID) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Long getCurrentUserId() {
+        return (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

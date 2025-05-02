@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.UUID;
 
 @Component
 public class JwtUtils {
@@ -20,12 +19,12 @@ public class JwtUtils {
     @Value("${jwt.expiration}")
     private long jwtExpirationMs;
 
-    // New: Helper to get a real Key object
+
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(UUID userId, String role) {
+    public String generateToken(Long userId, String role) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim("role", role)

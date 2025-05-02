@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,6 +70,12 @@ public class AuthService {
 
         String token = jwtUtils.generateToken(user.getId(), user.getRole());
 
-        return ResponseEntity.ok(new ApiResponse(token));
+        return ResponseEntity.ok(Map.of(
+                "token", token,
+                "userId", user.getId(),
+                "role", user.getRole(),
+                "name", user.getName(),
+                "email", user.getEmail()
+        ));
     }
 }

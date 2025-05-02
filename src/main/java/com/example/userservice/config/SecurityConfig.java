@@ -21,7 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.UUID;
+//import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
@@ -59,9 +59,9 @@ public class SecurityConfig {
                 String token = authHeader.substring(7);
 
                 if (jwtUtils.validateToken(token)) {
-                    String userId = jwtUtils.getUserIdFromToken(token);
+                    Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            UUID.fromString(userId), null, Collections.emptyList());
+                            userId, null, Collections.emptyList());
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
